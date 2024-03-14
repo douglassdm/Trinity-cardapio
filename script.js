@@ -9,6 +9,16 @@ const cartCounter = document.getElementById("cart-count")
 const addressInput = document.getElementById("address")
 const addressWarn = document.getElementById("address-warn")
 
+const paymentModal = document.getElementById("payment-modal");
+const moneyOption = document.getElementById("money-option");
+const pixOption = document.getElementById("pix-option");
+const changeNeededInput = document.getElementById("change-needed");
+const cancelPaymentBtn = document.getElementById("cancel-payment-btn");
+const confirmPaymentBtn = document.getElementById("confirm-payment-btn");
+
+const copyPixBtn = document.getElementById("copy-pix-btn");
+const pixKey = document.getElementById("pix-key");
+
 
 let cart = [];
 
@@ -26,6 +36,144 @@ cartModal.addEventListener("click", function(event){
         cartModal.style.display = "none"
     }
 })
+
+function canConfirmPayment() {
+    return moneyOption.checked || pixOption.checked;
+}
+
+// Adicione um evento de mudança para as opções de pagamento
+moneyOption.addEventListener("change", function () {
+    // Verifique se a opção "Dinheiro" está marcada
+    if (moneyOption.checked) {
+        // Se estiver marcada, mostre a seção do troco
+        document.getElementById("money-section").style.display = "block";
+    } else {
+        // Se estiver desmarcada, oculte a seção do troco
+        document.getElementById("money-section").style.display = "none";
+    }
+});
+// Oculte a seção do troco inicialmente
+document.getElementById("money-section").style.display = "none";
+
+
+
+// Adicione um evento de clique ao botão Cancelar do modal de pagamento
+cancelPaymentBtn.addEventListener("click", function () {
+    hidePaymentModal();
+
+    // Ao cancelar o pagamento, redefina a seleção da opção "Dinheiro" e oculte a seção do troco
+    moneyOption.checked = false;
+    pixOption.checked = false;
+    document.getElementById("money-section").style.display = "none";
+    document.getElementById("pix-section").classList.add("hidden");
+});
+
+copyPixBtn.addEventListener("click", function() {
+    const textToCopy = pixKey.textContent;
+
+    // Create a temporary textarea element to copy the text to
+    const textarea = document.createElement('textarea');
+    textarea.value = textToCopy;
+    document.body.appendChild(textarea);
+
+    // Select the text within the textarea and copy it to the clipboard
+    textarea.select();
+    document.execCommand('copy');
+
+    // Remove the textarea from the DOM
+    document.body.removeChild(textarea);
+
+    // Show a toast notification indicating the text has been copied
+    Toastify({
+        text: "Chave Pix copiada para a área de transferência!",
+        duration: 3000,
+        close: true,
+        gravity: "top",
+        position: "right",
+        stopOnFocus: true,
+        style: {
+            background: "#4CAF50",
+        },
+    }).showToast();
+});
+
+// Adicione um evento de clique ao botão Confirmar Pagamento do modal de pagamento
+confirmPaymentBtn.addEventListener("click", function () {
+    if (!canConfirmPayment()) {
+        Toastify({
+            text: "Selecione um método de pagamento!",
+            duration: 3000,
+            close: true,
+            gravity: "top",
+            position: "right",
+            stopOnFocus: true,
+            style: {
+                background: "#EF4444",
+            },
+        }).showToast();
+        return;
+    }
+
+    const selectedPaymentOption = moneyOption.checked ? "Dinheiro" : "Pix";
+    const changeNeeded = moneyOption.checked ? changeNeededInput.value : null;
+
+    // Enviar as informações para o WhatsApp ou qualquer outra ação necessária
+    sendPaymentInfoToWhatsApp(selectedPaymentOption, changeNeeded);
+
+    // Limpar o carrinho e fechar o modal de pagamento
+    cart = [];
+    updateCartModal();
+    hidePaymentModal();
+});
+
+// Função para exibir o modal de pagamento
+function showPaymentModal() {
+    paymentModal.style.display = "flex";
+    
+    // Desmarcar todas as opções de pagamento ao abrir o modal
+    moneyOption.checked = false;
+    pixOption.checked = false;
+    // Ocultar a seção do troco ao abrir o modal
+    document.getElementById("money-section").style.display = "none";
+}
+
+// Adicione um evento de mudança para a opção Dinheiro
+moneyOption.addEventListener("change", function () {
+    const moneySection = document.getElementById("money-section");
+    const pixSection = document.getElementById("pix-section");
+
+    // Verifique se a opção "Dinheiro" está marcada
+    if (moneyOption.checked) {
+        // Se estiver marcada, mostre a seção do Dinheiro e oculte a seção do Pix
+        moneySection.style.display = "block";
+        pixSection.classList.add("hidden");
+    } else {
+        // Se estiver desmarcada, oculte a seção do Dinheiro
+        moneySection.style.display = "none";
+    }
+});
+
+// Adicione um evento de mudança para a opção Pix
+pixOption.addEventListener("change", function () {
+    const moneySection = document.getElementById("money-section");
+    const pixSection = document.getElementById("pix-section");
+    
+    // Verifique se a opção "Pix" está marcada
+    if (pixOption.checked) {
+        // Se estiver marcada, mostre a seção do Pix e oculte a seção do Dinheiro
+        pixSection.classList.remove("hidden");
+        moneySection.style.display = "none";
+    } else {
+        // Se estiver desmarcada, oculte a seção do Pix
+        pixSection.classList.add("hidden");
+    }
+});
+
+
+// Função para fechar o modal de pagamento
+function hidePaymentModal() {
+    paymentModal.style.display = "none";
+}
 
 //Botão fechar modal
 closeModalBtn.addEventListener("click", function(){
@@ -64,12 +212,10 @@ function addToCart(name, price){
 
 }
 
-
 // atualiza o carrinho
 function updateCartModal(){
     cartItemsContainer.innerHTML = "";
     let total = 0;
-
 
     cart.forEach(item => {
         const cartItemElement = document.createElement("div");
@@ -86,14 +232,11 @@ function updateCartModal(){
                 <button class="remove-form-cart-btn" data-name="${item.name}">
                     Remover
                 </button>
-
             </div>
         `
 
         total += item.price * item.quantity;
-
-        cartItemsContainer.appendChild(cartItemElement)
-
+        cartItemsContainer.appendChild(cartItemElement);
     })
 
     cartTotal.textContent = total.toLocaleString("pt-BR",{
@@ -101,9 +244,22 @@ function updateCartModal(){
         currency: "BRL"
     });
 
-    cartCounter.innerHTML = cart.length;
+    updatePaymentModalTotal(total); // Adiciona essa linha para atualizar o total no modal de pagamento
 
+    cartCounter.innerHTML = cart.length;
 }
+
+// Função para atualizar o total no modal de pagamento
+function updatePaymentModalTotal(total) {
+    const paymentModalTotal = document.getElementById("payment-modal-total");
+    if (paymentModalTotal) {
+        paymentModalTotal.textContent = total.toLocaleString("pt-BR", {
+            style: "currency",
+            currency: "BRL"
+        });
+    }
+}
+
 
 // Função para remover item do carrinho
 cartItemsContainer.addEventListener("click", function(event){
@@ -133,7 +289,6 @@ function removeItemCart(name){
     }
 
 }
-
 
 addressInput.addEventListener("input", function(event){
     let inputValue = event.target.value;
@@ -175,24 +330,32 @@ checkoutBtn.addEventListener("click", function(){
         return;
     }
 
-    //Enviar o pedido para api whatsapp
-    const cartItems = cart.map((item) => {
-        return(
-            `${item.name} Quantidade: (${item.quantity}) Preço: R$${item.price.toFixed(2)}\n`
-        )
-    }).join("")
-
-    const message = encodeURIComponent(cartItems)
-    const phone = "99984995294"
-
-    const totalText = cartTotal.textContent || cartTotal.innerText;
-    
-    window.open(`https://wa.me/${phone}?text=${message}%0AEndereço: ${addressInput.value}%0ATotal: ${totalText}`, "_blank");
-
-    cart = [];
+    showPaymentModal();
     updateCartModal();
 
 })
+
+
+// Função para enviar informações de pagamento para o WhatsApp
+function sendPaymentInfoToWhatsApp(paymentOption, changeNeeded) {
+    const cartItems = cart.map((item) => {
+        return (
+            `${item.name} Quantidade: (${item.quantity}) Preço: R$${item.price.toFixed(2)}\n`
+        );
+    }).join("");
+
+    const totalText = cartTotal.textContent || cartTotal.innerText;
+
+    let paymentInfo = `Forma de pagamento: ${paymentOption}\n`;
+    if (paymentOption === "Dinheiro" && changeNeeded) {
+        paymentInfo += `Troco para: R$${parseFloat(changeNeeded).toFixed(2)}\n`;
+    }
+
+    const message = encodeURIComponent(`${cartItems}\n${paymentInfo}Endereço: ${addressInput.value}\nTotal: ${totalText}`);
+    const phone = "99984995294";
+
+    window.open(`https://wa.me/${phone}?text=${message}`, "_blank");
+}
 
 // Verificar a hora e manipular o card harario
 function checkRestaurantOpen(){

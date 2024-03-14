@@ -252,7 +252,7 @@
 
             <p class="font-bold">Total: <span id="cart-total">0.00</span></p>
 
-            <p class="font-bold mt-4">Endereço de entrega:</p>
+            <p class="font-bold mt-4">Endereço de entrega completo:</p>
 
             <input 
                 type="text"
@@ -271,6 +271,41 @@
 
     </div>
     <!-- FIM MODAL CART -->
+
+    <!-- MODAL DE PAGAMENTO -->
+    <div id="payment-modal" class="bg-black/60 w-full h-full fixed top-0 left-0 z-9[99] items-center justify-center hidden">
+        <div class="bg-white p-5 rounded-md min-w-[90%] md:min-w-[600px]">
+            <h2 class="text-center font-bold text-2xl mb-4">Escolha a forma de pagamento</h2>
+
+            <p class="font-bold mb-6">Total: <span id="payment-modal-total">0.00</span></p>
+
+            <label class="block mb-2">
+                <input type="radio" name="payment-option" value="money" id="money-option" checked>
+                Dinheiro
+            </label>
+            <div id="money-section" class=" mb-4">
+                <label for="change-needed" class="block mb-2">Precisa de troco?</label>
+                <input type="text" id="change-needed" placeholder="Troco para quanto..." class="w-full border-2 p-1 rounded my-1">
+            </div>
+
+            <label class="block mb-2">
+                <input type="radio" name="payment-option" value="pix" id="pix-option">
+                Pix
+            </label>
+            <div id="pix-section" class="hidden border-2 flex flex-col items-center justify-center p-2">
+                <img src="assets/pix.png" alt="Pix QR Code" class="w-40 h-40 mb-4 border-2">
+                <p class="font-bold">Chave Pix:</p>
+                <p id="pix-key">01066825394</p>
+                <button id="copy-pix-btn" class="bg-blue-500 text-white px-4 py-1 rounded mt-2">Copiar</button>
+            </div>
+
+            <div class="flex items-center justify-between mt-5 w-full">
+                <button id="cancel-payment-btn">Cancelar</button>
+                <button id="confirm-payment-btn" class="bg-green-500 text-white px-4 py-1 rounded">Confirmar Pagamento</button>
+            </div>
+        </div>
+    </div>
+    <!-- FIM DO MODAL DE PAGAMENTO -->
 
 
     <!-- BUTTON CARD FOOTER-->
