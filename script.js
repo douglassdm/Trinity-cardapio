@@ -71,19 +71,19 @@ cancelPaymentBtn.addEventListener("click", function () {
 copyPixBtn.addEventListener("click", function() {
     const textToCopy = pixKey.textContent;
 
-    // Create a temporary textarea element to copy the text to
+    // Crie um elemento textarea temporário para copiar o texto
     const textarea = document.createElement('textarea');
     textarea.value = textToCopy;
     document.body.appendChild(textarea);
 
-    // Select the text within the textarea and copy it to the clipboard
+    // Selecione o texto dentro do textarea e copie para a área de transferência
     textarea.select();
     document.execCommand('copy');
 
-    // Remove the textarea from the DOM
+    // Remova o textarea do DOM
     document.body.removeChild(textarea);
 
-    // Show a toast notification indicating the text has been copied
+    // Exiba uma notificação de toast indicando que o texto foi copiado
     Toastify({
         text: "Chave Pix copiada para a área de transferência!",
         duration: 3000,
@@ -352,7 +352,7 @@ function sendPaymentInfoToWhatsApp(paymentOption, changeNeeded) {
     }
 
     const message = encodeURIComponent(`${cartItems}\n${paymentInfo}Endereço: ${addressInput.value}\nTotal: ${totalText}`);
-    const phone = "99984995294";
+    const phone = "99999999999";
 
     window.open(`https://wa.me/${phone}?text=${message}`, "_blank");
 }
