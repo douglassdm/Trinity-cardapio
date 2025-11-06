@@ -352,7 +352,7 @@ function sendPaymentInfoToWhatsApp(paymentOption, changeNeeded) {
     }
 
     const message = encodeURIComponent(`${cartItems}\n${paymentInfo}Endereço: ${addressInput.value}\nTotal: ${totalText}`);
-    const phone = "99999999999";
+    const phone = "99984995294";
 
     window.open(`https://wa.me/${phone}?text=${message}`, "_blank");
 }
@@ -361,7 +361,7 @@ function sendPaymentInfoToWhatsApp(paymentOption, changeNeeded) {
 function checkRestaurantOpen(){
     const data = new Date();
     const hora = data.getHours();
-    return hora >= 18 && hora < 23;
+    return hora >= 18 && hora < 24;
 }
 
 const spanItem = document.getElementById("date-span")
